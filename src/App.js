@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import Items from "./components/items";
 import axios from "axios";
@@ -12,6 +11,7 @@ class App extends React.Component {
       name: null,
       height: null,
       homeworld: null,
+      homeworldurl: null,
       films: [],
       filmTitle: [],
       loading: false,
@@ -36,13 +36,30 @@ class App extends React.Component {
         this.setState({
           name: data.name,
           height: data.height,
-          homeworld: data.homeworld,
+          homeworldurl: data.homeworld,
           films: data.films,
         });
       })
       .catch((error) => {
         console.warn(error);
         this.setState({ error: true });
+      })
+      .then(() => {
+        axios({
+          method: "GET",
+          url: this.state.homeworldurl,
+          timeout: 4000,
+        })
+          .then((response) => {
+            const { data } = response;
+            this.setState({
+              homeworld: data.name,
+            });
+          })
+          .catch((error) => {
+            console.warn(error);
+            this.setState({ error: true });
+          });
       })
       .then(() => {
         axios
@@ -78,24 +95,35 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          {!this.state.loading && this.state.name && (
-            <Items
-              name={this.state.name}
-              height={this.state.height}
-              homeworld={this.state.homeworld}
-              films={this.state.films}
-              filmTitle={this.state.filmTitle}
-            />
-          )}
-          <button disabled={this.state.disabled} onClick={() => this.getChar()}>
-            Get New Character
-          </button>
-          <p>
-            You already clicked {this.state.clicks} and still have{" "}
-            {this.state.remaining} credits left.
-          </p>
+        <header className="container">
+          <img
+            src="https://logodownload.org/wp-content/uploads/2015/12/star-wars-logo-3-1.png"
+            className="App-logo"
+            alt="star-wars-logo"
+          />
+          <div className="main-content">
+            {this.state.loading && <div className="loading"></div>}
+            {!this.state.loading && this.state.name && (
+              <Items
+                name={this.state.name}
+                height={this.state.height}
+                homeworld={this.state.homeworld}
+                homeworldurl={this.state.homeworldurl}
+                films={this.state.films}
+                filmTitle={this.state.filmTitle}
+              />
+            )}
+            <button
+              disabled={this.state.disabled}
+              onClick={() => this.getChar()}
+            >
+              Get New Character
+            </button>
+            <p>
+              You already clicked {this.state.clicks} and still have{" "}
+              {this.state.remaining} credits left.
+            </p>
+          </div>
         </header>
       </div>
     );

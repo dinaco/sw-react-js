@@ -8,7 +8,7 @@ class Items extends React.Component {
         <h1>Hello from {this.props.name}</h1>
         <p>height: {this.props.height}</p>
         <p>
-          <a href={this.props.homeworld}>homeworld</a>
+          <a href={this.props.homeworldurl}>{this.props.homeworld}</a>
         </p>
         <ul>
           <FilmItemRow
